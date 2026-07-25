@@ -1,30 +1,138 @@
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import {
+  Footprints,
+  HeartPulse,
+  Phone,
+  PersonStanding,
+  ShieldCheck,
+  Siren,
+  TriangleAlert,
+  Wifi,
+  WifiOff,
+} from 'lucide-react'
 import { useStore } from '../store'
+import { Skeleton } from '../components/Skeleton'
+import { ActionTile } from '../components/ActionTile'
+
+const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
+
+function formatClock(d: Date): string {
+  const h = d.getHours()
+  const m = d.getMinutes().toString().padStart(2, '0')
+  const ampm = h < 12 ? '오전' : '오후'
+  const h12 = ((h + 11) % 12) + 1
+  return `${ampm} ${h12}:${m} · ${d.getMonth() + 1}월 ${d.getDate()}일 ${WEEKDAYS[d.getDay()]}`
+}
+
+function useClock(): Date {
+  const [now, setNow] = useState(() => new Date())
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 15000)
+    return () => clearInterval(id)
+  }, [])
+  return now
+}
 
 export function Kiosk() {
-  const { mode, alert, heartBpm } = useStore()
-  const modeText = mode === 'indoor' ? '실내 모드 · 지켜보는 중' : '실외 모드 · 보행 중'
+  const mode = useStore((s) => s.mode)
+  const alert = useStore((s) => s.alert)
+  const heartBpm = useStore((s) => s.heartBpm)
+  const connected = useStore((s) => s.connected)
+  const clearAlert = useStore((s) => s.clearAlert)
+  const now = useClock()
+
+  // 낙상 경보는 몇 초 머문 뒤 자동으로 사라진다(새 낙상이 오면 타이머 재설정).
+  const alertTs = alert?.type === 'fall' ? alert.ts : null
+  useEffect(() => {
+    if (alertTs == null) return
+    const id = setTimeout(() => clearAlert(), 6000)
+    return () => clearTimeout(id)
+  }, [alertTs, clearAlert])
+
+  const isIndoor = mode === 'indoor'
+  const StatusIcon = isIndoor ? ShieldCheck : Footprints
+  const title = isIndoor ? '지켜보고 있어요' : '함께 걷고 있어요'
+  const sub = isIndoor ? '실내 모드 · 카메라 꺼짐' : '실외 모드 · 보행 보조'
+
   return (
-    <div style={{ fontFamily: 'Malgun Gothic, sans-serif', padding: 24 }}>
-      <div data-testid="mode" style={{ fontSize: 28, fontWeight: 800 }}>
-        {mode === 'indoor' ? '🟢 ' : '🚶 '}{modeText}
+    <div className="kiosk">
+      <div className="topbar">
+        <span className="clock">{formatClock(now)}</span>
+        <span className={connected ? 'conn is-on' : 'conn'}>
+          {connected ? <Wifi size={18} aria-hidden="true" /> : <WifiOff size={18} aria-hidden="true" />}
+          {connected ? '연결됨' : '연결 중'}
+        </span>
       </div>
-      {heartBpm != null && (
-        <div style={{ fontSize: 24, marginTop: 12 }}>❤️ {heartBpm}</div>
-      )}
+
+      <header className="status">
+        <div className={isIndoor ? 'status-icon' : 'status-icon is-active'}>
+          <span className="pulse" aria-hidden="true" />
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span
+              key={mode}
+              initial={{ opacity: 0, scale: 0.7 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.7 }}
+              transition={{ duration: 0.35 }}
+              style={{ display: 'grid' }}
+            >
+              <StatusIcon size={56} strokeWidth={2} aria-hidden="true" />
+            </motion.span>
+          </AnimatePresence>
+        </div>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={mode}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            <h1 className="status-title">{title}</h1>
+            <p data-testid="mode" className="status-sub">{sub}</p>
+          </motion.div>
+        </AnimatePresence>
+      </header>
+
+      <div className="grid">
+        <ActionTile icon={HeartPulse} label="건강 상태">
+          {heartBpm != null ? (
+            <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
+              {heartBpm}
+              <span className="unit">회/분</span>
+            </motion.span>
+          ) : (
+            <Skeleton width={120} height={40} radius={12} />
+          )}
+        </ActionTile>
+        <ActionTile icon={PersonStanding} label="보행 도움" />
+        <ActionTile icon={Phone} label="가족 연결" />
+        <ActionTile icon={Siren} label="도움 요청" tone="danger" />
+      </div>
+
       <AnimatePresence>
         {alert?.type === 'fall' && (
           <motion.div
-            role="alert"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
+            className="fall-scrim"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            style={{
-              marginTop: 24, padding: 24, borderRadius: 16,
-              background: '#C8321F', color: '#fff', fontSize: 26, fontWeight: 800,
-            }}
           >
-            🆘 낙상 감지 — 도움을 부르는 중
+            <motion.div
+              role="alert"
+              className="fall-card"
+              initial={{ opacity: 0, y: 24, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 26 }}
+            >
+              <span className="fall-icon">
+                <TriangleAlert size={56} strokeWidth={2.2} aria-hidden="true" />
+              </span>
+              <h2 className="fall-title">낙상 감지</h2>
+              <p className="fall-sub">도움을 부르고 있어요</p>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

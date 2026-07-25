@@ -5,6 +5,9 @@ interface AppState {
   mode: SystemMode
   alert: CareEvent | null
   heartBpm: number | null
+  connected: boolean
+  setConnected: (v: boolean) => void
+  clearAlert: () => void
   handle: (raw: string) => void
 }
 
@@ -12,6 +15,9 @@ export const useStore = create<AppState>((set) => ({
   mode: 'outdoor',
   alert: null,
   heartBpm: null,
+  connected: false,
+  setConnected: (v) => set({ connected: v }),
+  clearAlert: () => set({ alert: null }),
   handle: (raw) => {
     const msg = JSON.parse(raw) as WsMessage
     if (msg.kind === 'event') {
