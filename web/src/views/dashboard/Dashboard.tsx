@@ -41,9 +41,9 @@ export function Dashboard() {
           <div className="hi">안녕하세요</div>
           <div className="who">어머니 상태예요</div>
         </div>
-        <span className="iconbtn" aria-label="알림">
+        <button type="button" className="iconbtn" aria-label="알림">
           <Bell size={20} strokeWidth={2.2} aria-hidden="true" />
-        </span>
+        </button>
       </div>
 
       <HeroStatus {...status} />
