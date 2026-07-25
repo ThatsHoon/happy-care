@@ -9,3 +9,11 @@
 .hero-sub{margin-top:16px;font-size:13.5px;font-weight:600;color:var(--blue-deep);
   background:var(--blue-soft);border-radius:999px;padding:9px 16px}
 .metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.map-card{background:var(--card);border-radius:20px;padding:15px 16px;box-shadow:var(--shadow-sm)}
+.map-top{display:flex;align-items:center;justify-content:space-between;
+  font-size:13px;font-weight:700;color:var(--muted)}
+.map-badge{font-size:11.5px;font-weight:700;color:var(--blue);
+  background:var(--blue-soft);border-radius:999px;padding:3px 10px}
+.plan{margin-top:12px;width:100%;height:104px;display:block}
+.plan .room{fill:#fff;stroke:var(--line);stroke-width:1.5}
+.plan .room.is-active{fill:var(--blue-soft);stroke:var(--blue)}
