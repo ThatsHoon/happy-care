@@ -33,15 +33,7 @@ export function Kiosk() {
   const alert = useStore((s) => s.alert)
   const heartBpm = useStore((s) => s.heartBpm)
   const connected = useStore((s) => s.connected)
-  const clearAlert = useStore((s) => s.clearAlert)
   const now = useClock()
-
-  const alertTs = alert?.type === 'fall' ? alert.ts : null
-  useEffect(() => {
-    if (alertTs == null) return
-    const id = setTimeout(() => clearAlert(), 6000)
-    return () => clearTimeout(id)
-  }, [alertTs, clearAlert])
 
   const isIndoor = mode === 'indoor'
   const StatusIcon = isIndoor ? ShieldCheck : Footprints
