@@ -49,6 +49,8 @@ export function Dashboard() {
       <HeroStatus {...status} />
       {/* 활동량은 8주 스켈레톤 단계의 시뮬레이션 값 — 실제 활동 스트림은 후속 계획에서 연동 */}
       <MetricCards heartBpm={heartBpm} activity={[40, 65, 50, 75, 60, 45]} />
+      {/* room은 아직 고정값('거실') — PersonState에 방 정보가 없어 위치 신호가 없다.
+          Gazebo sim-radar가 공간 ground truth를 주면 그때 실제 방을 넘긴다. */}
       <HomeMap mode={mode} />
       <ActivityFeed events={events} />
       <TabBar active="home" />
