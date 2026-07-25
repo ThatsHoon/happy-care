@@ -8,3 +8,4 @@
 .gauge-small{font-size:13px;color:var(--muted);font-weight:600}
 .hero-sub{margin-top:16px;font-size:13.5px;font-weight:600;color:var(--blue-deep);
   background:var(--blue-soft);border-radius:999px;padding:9px 16px}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px}

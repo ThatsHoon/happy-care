@@ -26,3 +26,7 @@ body{background:var(--ground);color:var(--ink);font-family:var(--font);
 .stat-card .sc-val{font-size:28px;font-weight:800;letter-spacing:-.02em;
   display:flex;align-items:baseline;gap:5px}
 .stat-card .sc-val .u{font-size:14px;font-weight:600;color:var(--faint)}
+
+.bars{display:flex;align-items:flex-end;gap:4px;height:30px}
+.bars i{flex:1;background:var(--blue-soft);border-radius:3px;font-style:normal}
+.bars i.on{background:var(--blue)}
