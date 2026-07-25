@@ -1,19 +1,13 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
-  Footprints,
-  HeartPulse,
-  Phone,
-  PersonStanding,
-  ShieldCheck,
-  Siren,
-  TriangleAlert,
-  Wifi,
-  WifiOff,
+  Footprints, HeartPulse, Phone, PersonStanding, ShieldCheck, Siren,
+  TriangleAlert, Wifi, WifiOff,
 } from 'lucide-react'
 import { useStore } from '../store'
 import { Skeleton } from '../components/Skeleton'
 import { ActionTile } from '../components/ActionTile'
+import { RadialGauge } from '../components/RadialGauge'
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
 
@@ -42,7 +36,6 @@ export function Kiosk() {
   const clearAlert = useStore((s) => s.clearAlert)
   const now = useClock()
 
-  // 낙상 경보는 몇 초 머문 뒤 자동으로 사라진다(새 낙상이 오면 타이머 재설정).
   const alertTs = alert?.type === 'fall' ? alert.ts : null
   useEffect(() => {
     if (alertTs == null) return
@@ -65,22 +58,21 @@ export function Kiosk() {
         </span>
       </div>
 
-      <header className="status">
-        <div className={isIndoor ? 'status-icon' : 'status-icon is-active'}>
-          <span className="pulse" aria-hidden="true" />
+      <header className="kstatus">
+        <RadialGauge value={0.86} size={216} stroke={14}>
           <AnimatePresence mode="wait" initial={false}>
             <motion.span
               key={mode}
+              className="kgauge-icon"
               initial={{ opacity: 0, scale: 0.7 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.7 }}
               transition={{ duration: 0.35 }}
-              style={{ display: 'grid' }}
             >
-              <StatusIcon size={56} strokeWidth={2} aria-hidden="true" />
+              <StatusIcon size={64} strokeWidth={1.9} aria-hidden="true" />
             </motion.span>
           </AnimatePresence>
-        </div>
+        </RadialGauge>
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={mode}
@@ -89,8 +81,8 @@ export function Kiosk() {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
           >
-            <h1 className="status-title">{title}</h1>
-            <p data-testid="mode" className="status-sub">{sub}</p>
+            <h1 className="ktitle">{title}</h1>
+            <p data-testid="mode" className="ksub">{sub}</p>
           </motion.div>
         </AnimatePresence>
       </header>
@@ -113,12 +105,7 @@ export function Kiosk() {
 
       <AnimatePresence>
         {alert?.type === 'fall' && (
-          <motion.div
-            className="fall-scrim"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
+          <motion.div className="fall-scrim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <motion.div
               role="alert"
               className="fall-card"
