@@ -1,0 +1,15 @@
+:root{
+  --ground:#F4F7FE; --card:#FFFFFF;
+  --ink:#0F1B33; --muted:#5B6B87; --faint:#8A97B2; --line:#E4EAF5;
+  --blue:#2E6BF6; --blue-deep:#1B4DB3; --blue-soft:#EAF1FF;
+  --good:#1FA97A; --good-soft:#E3F5EE;
+  --danger:#E5484D; --danger-soft:#FCE9E9; --amber:#E8A23D;
+  --radius:20px; --radius-lg:26px;
+  --shadow-sm:0 8px 22px -12px rgba(24,54,120,.28);
+  --font:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html,body,#root{height:100%;margin:0}
+body{background:var(--ground);color:var(--ink);font-family:var(--font);
+  -webkit-font-smoothing:antialiased;line-height:1.4}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:12px}
