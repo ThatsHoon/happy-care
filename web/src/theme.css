@@ -13,3 +13,16 @@ html,body,#root{height:100%;margin:0}
 body{background:var(--ground);color:var(--ink);font-family:var(--font);
   -webkit-font-smoothing:antialiased;line-height:1.4}
 :focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:12px}
+
+.icon-chip{border-radius:12px;display:grid;place-items:center;flex:none;
+  background:var(--blue-soft);color:var(--blue)}
+.icon-chip.is-good{background:var(--good-soft);color:var(--good)}
+.icon-chip.is-danger{background:var(--danger-soft);color:var(--danger)}
+
+.stat-card{background:var(--card);border-radius:20px;padding:16px;
+  box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:10px}
+.stat-card .sc-top{display:flex;align-items:center;gap:9px;
+  color:var(--muted);font-size:13px;font-weight:700}
+.stat-card .sc-val{font-size:28px;font-weight:800;letter-spacing:-.02em;
+  display:flex;align-items:baseline;gap:5px}
+.stat-card .sc-val .u{font-size:14px;font-weight:600;color:var(--faint)}
