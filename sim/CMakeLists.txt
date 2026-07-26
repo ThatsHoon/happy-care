@@ -3,7 +3,7 @@ project(happy_care_sim)
 
 find_package(ament_cmake REQUIRED)
 
-install(DIRECTORY worlds
+install(DIRECTORY worlds urdf launch
   DESTINATION share/${PROJECT_NAME}
 )
 
