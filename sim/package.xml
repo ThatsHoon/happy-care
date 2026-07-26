@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>happy_care_sim</name>
+  <version>0.1.0</version>
+  <description>Gazebo Classic simulation for the happy-care dual-mode robot PoC</description>
+  <maintainer email="dev@example.com">happy-care team</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>gazebo_ros</depend>
+  <depend>gazebo_dev</depend>
+  <depend>rclcpp</depend>
+  <depend>geometry_msgs</depend>
+  <depend>std_msgs</depend>
+
+  <exec_depend>gazebo_plugins</exec_depend>
+  <exec_depend>gazebo_ros_pkgs</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>web_video_server</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
