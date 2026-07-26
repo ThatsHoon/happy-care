@@ -84,6 +84,7 @@
     </model>
 
     <model name="person">
+      <static>true</static>
       <pose>0 0 0.9 0 0 0</pose>
       <link name="link">
         <collision name="collision"><geometry><cylinder><radius>0.2</radius><length>1.6</length></cylinder></geometry></collision>
@@ -93,5 +94,12 @@
         </visual>
       </link>
     </model>
+
+    <plugin name="happy_care_world_plugin" filename="libhappy_care_world_plugin.so">
+      <ros></ros>
+      <robot_model>haengbogi</robot_model>
+      <station_model>charging_station</station_model>
+      <person_model>person</person_model>
+    </plugin>
   </world>
 </sdf>
