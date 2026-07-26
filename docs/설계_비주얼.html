@@ -1,0 +1,575 @@
+<style>
+  :root{
+    --ground:#F6F8FB; --surface:#FFFFFF; --surface-2:#EEF2F7;
+    --ink:#0E1826; --muted:#54657A; --faint:#8697A8;
+    --line:#DBE3EC; --line-strong:#C3CFDB;
+    --signal:#0C93A4; --signal-bg:#E2F4F6;
+    --out:#C56A24; --out-bg:#FBEEE1;
+    --fall:#C56A24; --fall-bg:#FBEEE1;
+    --vitals:#C6425A; --vitals-bg:#FBE7EC;
+    --iso:#5E4FB8; --iso-bg:#ECE9FA;
+    --good:#2E8B6B; --warn:#C08a1e;
+    --mono:'JetBrains Mono','Cascadia Code',ui-monospace,Consolas,monospace;
+    --sans:'Pretendard','Pretendard Variable','Apple SD Gothic Neo','Malgun Gothic',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --maxw:920px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --ground:#0B1220; --surface:#111B2A; --surface-2:#0000;
+      --ink:#E7EEF6; --muted:#95A6B9; --faint:#6E8093;
+      --line:#22303F; --line-strong:#2E4152;
+      --signal:#2CD3E6; --signal-bg:#0F2830;
+      --out:#E89B57; --out-bg:#2C2114;
+      --fall:#E89B57; --fall-bg:#2C2114;
+      --vitals:#EC7086; --vitals-bg:#2C1720;
+      --iso:#9E8FEC; --iso-bg:#1E1A33;
+      --good:#4FC79B; --warn:#E0B24d;
+    }
+  }
+  :root[data-theme="light"]{
+    --ground:#F6F8FB; --surface:#FFFFFF; --surface-2:#EEF2F7;
+    --ink:#0E1826; --muted:#54657A; --faint:#8697A8;
+    --line:#DBE3EC; --line-strong:#C3CFDB;
+    --signal:#0C93A4; --signal-bg:#E2F4F6;
+    --out:#C56A24; --out-bg:#FBEEE1;
+    --fall:#C56A24; --fall-bg:#FBEEE1;
+    --vitals:#C6425A; --vitals-bg:#FBE7EC;
+    --iso:#5E4FB8; --iso-bg:#ECE9FA; --good:#2E8B6B; --warn:#C08a1e;
+  }
+  :root[data-theme="dark"]{
+    --ground:#0B1220; --surface:#111B2A; --surface-2:#0000;
+    --ink:#E7EEF6; --muted:#95A6B9; --faint:#6E8093;
+    --line:#22303F; --line-strong:#2E4152;
+    --signal:#2CD3E6; --signal-bg:#0F2830;
+    --out:#E89B57; --out-bg:#2C2114;
+    --fall:#E89B57; --fall-bg:#2C2114;
+    --vitals:#EC7086; --vitals-bg:#2C1720;
+    --iso:#9E8FEC; --iso-bg:#1E1A33; --good:#4FC79B; --warn:#E0B24d;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+    line-height:1.7;-webkit-font-smoothing:antialiased;font-size:16px}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  section{padding:0 0 8px}
+  h2,h3{text-wrap:balance;line-height:1.25}
+  a{color:var(--signal);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code,pre,.mono{font-family:var(--mono)}
+  ::selection{background:var(--signal);color:var(--ground)}
+  :focus-visible{outline:2px solid var(--signal);outline-offset:2px;border-radius:3px}
+
+  .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,var(--surface),var(--ground))}
+  #radar{position:absolute;inset:0;width:100%;height:100%;opacity:.5;pointer-events:none}
+  .hero .wrap{position:relative;padding-top:60px;padding-bottom:44px}
+  .eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--signal);margin:0 0 18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--signal);animation:pulse 2.6s ease-out infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--signal) 60%,transparent)}
+    70%{box-shadow:0 0 0 12px transparent}100%{box-shadow:0 0 0 0 transparent}}
+  .title{font-size:clamp(40px,8vw,74px);font-weight:800;letter-spacing:-.02em;margin:0;line-height:1}
+  .title .sub{display:block;font-size:clamp(15px,2.4vw,20px);font-weight:600;color:var(--muted);
+    letter-spacing:0;margin-top:16px;max-width:40ch}
+  .thesis{font-size:clamp(19px,3vw,27px);font-weight:700;margin:28px 0 0;max-width:26ch;
+    line-height:1.3;border-left:3px solid var(--signal);padding-left:16px}
+  .metarow{display:flex;gap:8px;flex-wrap:wrap;margin-top:26px}
+  .tag{font-family:var(--mono);font-size:12px;padding:5px 11px;border:1px solid var(--line-strong);
+    border-radius:999px;color:var(--muted);background:var(--surface)}
+  .tag b{color:var(--ink);font-weight:600}
+
+  /* dual-mode split */
+  .duo{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;gap:0;margin-top:6px}
+  .modecard{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:18px 20px;position:relative}
+  .modecard.o{border-top:3px solid var(--out)}
+  .modecard.i{border-top:3px solid var(--signal)}
+  .modecard .mtag{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+    padding:2px 8px;border-radius:5px;display:inline-block;margin-bottom:9px}
+  .modecard.o .mtag{color:var(--out);background:var(--out-bg)}
+  .modecard.i .mtag{color:var(--signal);background:var(--signal-bg)}
+  .modecard h3{margin:0 0 3px;font-size:17px}
+  .modecard .role{font-size:13px;color:var(--muted);margin:0 0 11px}
+  .modecard ul{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+  .modecard li{font-size:13.5px;padding-left:16px;position:relative}
+  .modecard li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--c,var(--faint))}
+  .modecard.o li::before{background:var(--out)}
+  .modecard.i li::before{background:var(--signal)}
+  .swap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:0 14px;min-width:120px}
+  .swap .ico{font-family:var(--mono);font-size:22px;color:var(--signal);line-height:1}
+  .swap .lbl{font-family:var(--mono);font-size:10.5px;text-align:center;color:var(--muted);letter-spacing:.03em;line-height:1.5}
+  .swap .lbl b{color:var(--ink);display:block}
+  @media (max-width:680px){.duo{grid-template-columns:1fr;gap:10px}.swap{flex-direction:row;min-width:0;padding:4px 0}.swap .ico{transform:rotate(90deg)}}
+
+  .shead{display:flex;align-items:baseline;gap:14px;margin:52px 0 20px;padding-top:12px}
+  .snum{font-family:var(--mono);font-size:13px;color:var(--signal);font-weight:600;
+    border:1px solid var(--line-strong);border-radius:6px;padding:2px 8px;flex:none}
+  .shead h2{font-size:clamp(23px,3.6vw,31px);font-weight:750;margin:0;letter-spacing:-.01em}
+  .lead{color:var(--muted);max-width:66ch;margin:-6px 0 20px;font-size:16.5px}
+  .lead strong{color:var(--ink);font-weight:650}
+
+  .decis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;
+    background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:8px}
+  .decis .cell{background:var(--surface);padding:15px 16px}
+  .decis .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+  .decis .v{font-weight:700;font-size:15px;color:var(--ink);line-height:1.3}
+  .decis .why{font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.4}
+
+  .stack{display:flex;flex-direction:column;gap:10px;margin:6px 0 10px}
+  .layer{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:16px 20px;position:relative}
+  .layer::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:4px;background:var(--signal)}
+  .layer .lh{display:flex;align-items:center;gap:11px;margin-bottom:9px}
+  .layer .lh .n{font-family:var(--mono);font-size:12px;color:var(--signal);font-weight:700}
+  .layer .lh .t{font-weight:750;font-size:16px}
+  .layer .lh .loc{font-family:var(--mono);font-size:11px;color:var(--faint);margin-left:auto;
+    border:1px solid var(--line);border-radius:5px;padding:2px 7px}
+  .items{display:flex;flex-wrap:wrap;gap:7px}
+  .item{font-size:13px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:var(--ink)}
+  .item .mono{color:var(--muted);font-size:11.5px}
+  .arrow{text-align:center;color:var(--faint);font-family:var(--mono);font-size:13px;margin:-3px 0}
+
+  .flow{display:flex;flex-wrap:wrap;gap:0;margin-top:14px;
+    border:1px dashed var(--line-strong);border-radius:12px;padding:8px;background:var(--signal-bg)}
+  .flow .step{flex:1 1 110px;padding:10px 12px;font-size:13px;position:relative}
+  .flow .step .sn{font-family:var(--mono);font-size:10.5px;color:var(--signal);letter-spacing:.08em}
+  .flow .step:not(:last-child)::after{content:"→";position:absolute;right:-7px;top:50%;transform:translateY(-50%);
+    color:var(--faint);font-family:var(--mono);font-size:13px}
+
+  .fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+  .fcard{border:1px solid var(--line);border-top:3px solid var(--c);border-radius:14px;background:var(--surface);padding:17px}
+  .fcard .ft{display:flex;align-items:center;gap:9px;font-weight:750;font-size:16px;margin-bottom:4px}
+  .fcard .badge{font-family:var(--mono);font-size:10.5px;color:var(--c);background:var(--cbg);
+    border-radius:5px;padding:2px 7px;letter-spacing:.04em}
+  .fcard p{font-size:13.5px;color:var(--muted);margin:8px 0 0}
+  .fcard .out{font-family:var(--mono);font-size:11.5px;color:var(--ink);margin-top:10px;
+    background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:8px 10px;overflow-x:auto}
+  .c-fall{--c:var(--fall);--cbg:var(--fall-bg)}
+  .c-vit{--c:var(--vitals);--cbg:var(--vitals-bg)}
+  .c-iso{--c:var(--iso);--cbg:var(--iso-bg)}
+
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin-top:6px}
+  table{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);font-weight:600;background:var(--surface-2)}
+  tr:last-child td{border-bottom:none}
+  td.num,th.num{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+  .lic{font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:5px;white-space:nowrap}
+  .lic.ok{color:var(--good);background:color-mix(in srgb,var(--good) 15%,transparent)}
+  .lic.warn{color:var(--warn);background:color-mix(in srgb,var(--warn) 16%,transparent)}
+
+  .mswitch{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:18px 20px;margin-top:6px}
+  .mswitch pre{margin:0;background:var(--surface-2);border-left:3px solid var(--signal)}
+
+  pre{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--signal);
+    border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:12.6px;line-height:1.62;margin:14px 0}
+  pre .cm{color:var(--faint)}
+  pre .cap{display:block;font-family:var(--sans);font-size:12.5px;color:var(--muted);margin:12px 0 -4px;font-weight:600}
+
+  .gantt{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin-top:6px}
+  .gantt table{min-width:660px;font-size:12.5px}
+  .gantt th.wk{text-align:center;width:40px}
+  .gantt td.task{white-space:nowrap;color:var(--ink);font-weight:550}
+  .gantt td.task.hi{color:var(--signal);font-weight:700}
+  .gantt td.g{padding:6px 4px}
+  .gantt .bar{height:13px;border-radius:4px;background:var(--surface-2)}
+  .gantt .bar.on{background:var(--signal)}
+  .gantt .bar.on.hero{background:var(--out)}
+
+  .risks{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:6px}
+  .risk{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:13px 16px}
+  .risk .r{font-weight:700;font-size:14px;display:flex;gap:8px;align-items:baseline}
+  .risk .r::before{content:"▲";color:var(--fall);font-size:11px}
+  .risk .m{font-size:13px;color:var(--muted);margin-top:6px}
+  .risk .m::before{content:"→ ";color:var(--good);font-family:var(--mono)}
+
+  footer{margin-top:56px;border-top:1px solid var(--line);padding:24px 0 60px;color:var(--muted);font-size:13px}
+  footer .links{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;font-family:var(--mono);font-size:12.5px}
+
+  /* elderly kiosk mockup — deliberately warm, high-contrast (single look) */
+  .kiosks{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px}
+  .kiosk{flex:1 1 280px;min-width:250px;background:#FBF6EC;color:#241a10;border:1px solid var(--line-strong);
+    border-radius:18px;padding:15px;display:flex;flex-direction:column;gap:11px}
+  .kbar{background:#2E241A;color:#FBF6EC;border-radius:10px;padding:9px 14px;font-weight:700;font-size:14.5px;text-align:center;font-variant-numeric:tabular-nums}
+  .kbar.calm{background:#1f6b4a}
+  .kstatus{background:#E1F0DF;color:#1c5c3a;border-radius:10px;padding:11px 14px;font-weight:800;font-size:17px;text-align:center}
+  .ktiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .ktile{background:#fff;border:2px solid #E4D8C2;border-radius:14px;padding:14px 8px;text-align:center;
+    font-weight:800;font-size:18px;color:#241a10;min-height:88px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+  .ktile .ke{font-size:32px;line-height:1}
+  .ktile.sos{background:#C8321F;color:#fff;border-color:#9e2414}
+  .ktile.wide{width:100%}
+  .kbig{font-size:52px;text-align:center;margin:8px 0 -6px}
+  .kmsg{text-align:center;font-weight:800;font-size:20px;color:#1c5c3a}
+  .kvit{display:flex;justify-content:center;gap:22px;font-weight:800;font-size:19px;color:#241a10;font-variant-numeric:tabular-nums}
+  .kcap{font-size:12.5px;color:#8a7860;text-align:center;margin-top:auto;padding-top:4px}
+
+  @media (max-width:560px){.decis{grid-template-columns:1fr 1fr}}
+  @media (prefers-reduced-motion:reduce){.eyebrow .dot{animation:none}}
+</style>
+
+<div class="hero">
+  <canvas id="radar" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <p class="eyebrow"><span class="dot"></span> 2026 제8회 K-디지털 트레이닝 해커톤 · 팀 오합지존 · 설계안 v2</p>
+    <h1 class="title">행복이<span class="sub">실외에선 함께 걷는 보행 보조 로봇, 실내에선 충전하며 방을 지키는 무구속 레이더 케어 — 하나의 디바이스, 두 개의 모드</span></h1>
+    <p class="thesis">실외에선 함께 걷고, 실내에선 충전하며 지킨다.</p>
+    <div class="metarow">
+      <span class="tag"><b>기간</b> 8주 PoC</span>
+      <span class="tag"><b>팀</b> 6인</span>
+      <span class="tag"><b>실내센서</b> BGT60TR13C 레이더</span>
+      <span class="tag"><b>전환</b> 도킹·충전 트리거</span>
+      <span class="tag"><b>보드</b> CY8CKIT-062S2-AI</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- 00 근원 : 듀얼모드 -->
+  <section>
+    <div class="shead"><span class="snum">00</span><h2>근원 — 병합이 균열을 메운다</h2></div>
+    <p class="lead">보행기의 약점은 <strong>상시성</strong>이었다. 낙상 최다 장소인 화장실·침실에서 쓰러질 때 보행기는 현관에 세워져 있다. 듀얼모드는 그 <strong>'세워둠'을 약점에서 자산으로 뒤집는다</strong> — 세워두면 방을 감시한다. 그리고 실내에 도킹하면 <strong>자율추종 카메라가 꺼지고 레이더만 켜진다</strong>: "사생활 공간에선 보지 않는다"가 모드 전환으로 물리적으로 보장된다.</p>
+
+    <div class="duo">
+      <div class="modecard o">
+        <span class="mtag">실외 모드 · 보행 중</span>
+        <h3>이동 보조</h3>
+        <p class="role">mobility</p>
+        <ul>
+          <li>AI Vision 자율추종</li>
+          <li>IMU 보행보조·낙상</li>
+          <li>그립 전극 심박</li>
+          <li>응급 알림</li>
+        </ul>
+      </div>
+      <div class="swap" aria-hidden="true">
+        <div class="ico">⇄</div>
+        <div class="lbl"><b>도킹·충전 감지</b>모드 전환<br>카메라⇄레이더</div>
+      </div>
+      <div class="modecard i">
+        <span class="mtag">실내 모드 · 충전 중</span>
+        <h3>방을 지키는 감시자</h3>
+        <p class="role">sentinel · 카메라 OFF</p>
+        <ul>
+          <li>레이더 낙상 감지</li>
+          <li>레이더 생명징후</li>
+          <li>고독사 상태머신</li>
+          <li>돌봄진단 축적</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="decis" style="margin-top:14px">
+      <div class="cell"><div class="k">제품</div><div class="v">행복이 유지</div><div class="why">보행기 + 충전 스테이션</div></div>
+      <div class="cell"><div class="k">구조</div><div class="v">듀얼모드</div><div class="why">도킹이 전환 트리거</div></div>
+      <div class="cell"><div class="k">데모 히어로</div><div class="v">도킹→실내전환</div><div class="why">→낙상 감지 순간</div></div>
+      <div class="cell"><div class="k">실외 기능</div><div class="v">요약·재현</div><div class="why">기존 자산 활용</div></div>
+      <div class="cell"><div class="k">실내 센서</div><div class="v">레이더 단일</div><div class="why">무구속·프라이버시</div></div>
+      <div class="cell"><div class="k">서비스</div><div class="v">안전망+진단</div><div class="why">공통 계층</div></div>
+    </div>
+  </section>
+
+  <!-- 01 아키텍처 -->
+  <section>
+    <div class="shead"><span class="snum">01</span><h2>실내 모드 아키텍처</h2></div>
+    <p class="lead">공통 두뇌(CY8CKIT)가 두 모드를 겸한다. 실내 모드의 원리: 낙상·생체·고독사는 별개가 아니라 <strong>하나의 레이더 신호에서 추정한 '사람 상태'를 세 각도로 읽는 것</strong> — 공통 인지코어 1개 + 판단 레이어 3개.</p>
+    <div class="stack">
+      <div class="layer">
+        <div class="lh"><span class="n">①</span><span class="t">인지 — 공통 레이더 코어</span><span class="loc">CY8CKIT 온보드</span></div>
+        <div class="items">
+          <span class="item">BGT60TR13C <span class="mono">1Tx·3Rx 60GHz</span></span>
+          <span class="item">raw ADC 큐브</span>
+          <span class="item">Range-Doppler Map</span>
+          <span class="item">Micro-Doppler 스펙트로그램</span>
+          <span class="item">Point Cloud <span class="mono">x,y,z,v,snr</span></span>
+        </div>
+      </div>
+      <div class="arrow">▼ 사람 상태(위치·자세·활동·미세변위)</div>
+      <div class="layer">
+        <div class="lh"><span class="n">②</span><span class="t">판단 — 경량모델 + 규칙</span><span class="loc">엣지 추론</span></div>
+        <div class="items">
+          <span class="item">낙상 : micro-Doppler CNN + 높이규칙</span>
+          <span class="item">생체 : 미세변위 → 호흡·심박</span>
+          <span class="item">고독사 : 재실·무동작·무생체 상태머신</span>
+        </div>
+      </div>
+      <div class="arrow">▼ 이벤트 (WiFi 직송)</div>
+      <div class="layer">
+        <div class="lh"><span class="n">③</span><span class="t">서비스 (공통)</span><span class="loc">클라우드</span></div>
+        <div class="items">
+          <span class="item">실시간 알림 <span class="mono">보호자·119</span></span>
+          <span class="item">관제 대시보드 <span class="mono">+모드표시</span></span>
+          <span class="item">돌봄진단 리포트</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 모드 전환 -->
+  <section>
+    <div class="shead"><span class="snum">02</span><h2>도킹 &amp; 모드 전환 <span style="font-size:14px;color:var(--out);font-family:var(--mono)">★ 히어로</span></h2></div>
+    <p class="lead">충전 스테이션은 <strong>전원 공급 + 실내 감시 정위치</strong>(거실·침실 등 주 생활공간). 충전 전류/접점을 감지하면 상태머신이 센서·기능 세트를 통째로 스위칭한다.</p>
+    <div class="mswitch">
+<pre>실외모드 ──(도킹·충전 감지)──▶ <b>전환</b>: 카메라 OFF · 레이더 ON · 실내 판단 활성
+실내모드 ──(도킹 해제)──▶     <b>전환</b>: 레이더 OFF · 카메라 ON · 자율추종 활성
+<span class="cm"># 경계처리: 도킹 후 레이더 워밍업(재실 캘리브레이션), 해제 후 자율추종 재획득, 충전전류 디바운스</span></pre>
+    </div>
+    <div class="flow" role="list" aria-label="히어로 데모 흐름">
+      <div class="step" role="listitem"><div class="sn">DEMO</div>행복이 스테이션 도킹</div>
+      <div class="step" role="listitem"><div class="sn">SWITCH</div>실내모드 전환·카메라 OFF</div>
+      <div class="step" role="listitem"><div class="sn">SENSE</div>방에서 낙상 재현</div>
+      <div class="step" role="listitem"><div class="sn">DETECT</div>레이더 CNN 낙상 판정</div>
+      <div class="step" role="listitem"><div class="sn">ALERT</div>대시보드 + 보호자·119</div>
+    </div>
+  </section>
+
+  <!-- 03 판단 레이어 -->
+  <section>
+    <div class="shead"><span class="snum">03</span><h2>세 실내 판단 레이어</h2></div>
+    <div class="fgrid">
+      <div class="fcard c-fall">
+        <div class="ft"><span class="badge">FALL</span> 낙상</div>
+        <p><b>micro-Doppler 스펙트로그램 → CNN (주경로 확정)</b> + Range-Angle 맵 규칙(폴백). <span style="color:var(--fall)">v3: BGT60TR13C는 조밀 포인트클라우드 불가(각분해능 ~50°) → 높이규칙 폐기.</span></p>
+        <div class="out">{ fall, confidence, 유형 }</div>
+      </div>
+      <div class="fcard c-vit">
+        <div class="ft"><span class="badge">VITALS</span> 생명징후</div>
+        <p>정지 시 흉부 미세변위 → 호흡(0.1–0.5Hz)·심박(0.8–2.5Hz). 움직임 중 "측정불가" 정직 표기.</p>
+        <div class="out">{ resp_bpm, heart_bpm, 신뢰구간 }</div>
+      </div>
+      <div class="fcard c-iso">
+        <div class="ft"><span class="badge">ISOLATION</span> 고독사</div>
+        <p>사람-상태를 시간축으로. 재실+무동작 N시간→주의→무생체→위험→자동신고. 외출=정상.</p>
+        <div class="out">{ status, 무동작시간, 마지막생체 }</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 데이터 -->
+  <section>
+    <div class="shead"><span class="snum">04</span><h2>데이터 전략 &amp; 실측 카탈로그</h2></div>
+    <p class="lead">HuggingFace 12키워드 검색 결과 <strong>배포 가능한 사전학습 모델은 사실상 0개</strong> → 우리가 학습(피칭 플러스). 아래는 <strong>블루프린트·사전학습·검증 보조</strong>. 대부분 TI 레이더지만 우리 Infineon과 <strong>같은 60GHz</strong>라 전이 가능, 도메인 갭은 자체수집으로.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>기능</th><th>데이터셋</th><th>실측 스키마</th><th>라이선스</th></tr></thead>
+        <tbody>
+          <tr><td>낙상</td><td class="mono" style="font-size:12px">GitHub sareebali/…fall-detection</td><td>포인트클라우드 <span class="mono" style="font-size:11px">frame,x,y,z,v,snr,noise</span> · 102 CSV · TI IWR6843 60GHz</td><td><span class="lic warn">미표기</span></td></tr>
+          <tr><td>낙상/활동</td><td class="mono" style="font-size:12px">strikersoft/microDopplerHAR</td><td><span class="mono" style="font-size:11px">20×1024 float32</span> 스펙트로그램 · 라벨 <b style="color:var(--fall)">1850:63 극불균형</b></td><td><span class="lic ok">MIT</span></td></tr>
+          <tr><td>심박</td><td class="mono" style="font-size:12px">YShane11/…heart-rate</td><td>레이더변위 5Hz + ECG 150Hz · 주석헤더 메타</td><td><span class="lic warn">미표기</span></td></tr>
+          <tr><td>생체</td><td class="mono" style="font-size:12px">rushai-dev/fmcw-vital-signs</td><td><span class="mono" style="font-size:11px">index,breath_phase,heart_phase,label</span></td><td><span class="lic ok">Apache-2.0</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead" style="margin-top:14px"><strong style="color:var(--fall)">⚠ 함정 2</strong> — ① HF 낙상 미러(<span class="mono" style="font-size:12px">SachitanandAgalduti/…</span>)는 <b>56바이트 깨진 스텁</b> → GitHub 원본 <span class="mono" style="font-size:12px">GatheredData/</span>에서 받을 것. ② microDoppler 양성 63개 극불균형 → focal loss/오버샘플링 필수.</p>
+
+<pre><span class="cap">micro-Doppler 로드 (MIT · 사전학습)</span>
+df = pd.read_parquet("hf://datasets/strikersoft/microDopplerHAR/train.parquet")
+spec = np.frombuffer(df["spectrogram"].iloc[0], dtype=np.float32).reshape(20, 1024)  <span class="cm"># Doppler×time</span>
+y = df["label"].values   <span class="cm"># 0=비낙상, 1=낙상 (불균형 1850:63)</span></pre>
+
+<pre><span class="cap">낙상 포인트클라우드 → 높이급강하 baseline (GitHub 원본)</span>
+pc = pd.read_csv("GatheredData/frontfall_1.csv")   <span class="cm"># frame,DetObj#,x,y,z,v,snr,noise</span>
+z = pc.groupby("frame")["z"].median()
+is_fall = (z.diff().min() &lt; -0.4) and (z.iloc[-3:].mean() &lt; 0.5)  <span class="cm"># 급강하 후 바닥 정지</span></pre>
+  </section>
+
+  <!-- 05 하드웨어 -->
+  <section>
+    <div class="shead"><span class="snum">05</span><h2>하드웨어 &amp; 비용</h2></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>계층</th><th>구성</th><th class="num">비용</th></tr></thead>
+        <tbody>
+          <tr><td>보행기(실외)</td><td>기존 행복이 프레임·구동·AI Vision·그립센서</td><td class="num">기존 자산</td></tr>
+          <tr><td>실내 인지</td><td>CY8CKIT-062S2-AI (BGT60TR13C) 1~2대</td><td class="num">8–20만원</td></tr>
+          <tr><td>충전 스테이션</td><td>도킹 접점·충전 회로 간이 제작</td><td class="num">수만원</td></tr>
+          <tr><td>ML 학습</td><td>개인 PC / 무료 Colab GPU</td><td class="num">$0</td></tr>
+          <tr><td>서비스</td><td>클라우드 무료티어</td><td class="num">~$0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead" style="margin-top:14px">온보드 PSoC6 + Imagimob 경량모델 → <strong>Jetson 없이 저비용 엣지AI</strong>. WiFi 이벤트 직송. 양산 시 단품칩 커스텀 모듈로 단가 1/N.</p>
+  </section>
+
+  <!-- 06 로드맵 -->
+  <section>
+    <div class="shead"><span class="snum">06</span><h2>8주 재계획 &amp; 6인 역할</h2></div>
+    <div class="gantt">
+      <table>
+        <thead><tr><th>업무</th><th class="wk">1</th><th class="wk">2</th><th class="wk">3</th><th class="wk">4</th><th class="wk">5</th><th class="wk">6</th><th class="wk">7</th><th class="wk">8</th></tr></thead>
+        <tbody id="gbody"></tbody>
+      </table>
+    </div>
+    <div class="tbl-wrap" style="margin-top:16px">
+      <table>
+        <thead><tr><th>이름</th><th>역할</th><th>담당 업무</th></tr></thead>
+        <tbody>
+          <tr><td>허찬영</td><td>팀장/아키텍처</td><td>듀얼모드 상태정의, <b>모드 전환 상태머신</b>, 통합·발표 총괄</td></tr>
+          <tr><td>전승엽</td><td>레이더 신호·ML</td><td>raw→표현형 파이프라인, micro-Doppler CNN 낙상모델 (구 AI Vision→레이더 피벗)</td></tr>
+          <tr><td>박성현</td><td>생체신호</td><td>레이더 미세변위 호흡·심박, 실외 그립 심박 연동, 무생체 판정</td></tr>
+          <tr><td>옥윤정</td><td>관제 프론트</td><td>대시보드(모드·포인트클라우드 시각화), 실시간 알림 UI, 진단 리포트</td></tr>
+          <tr><td>김재훈</td><td>백엔드·클라우드</td><td>FastAPI 관제서버·이벤트 DB, 알림 API, WiFi 수신</td></tr>
+          <tr><td>이건주</td><td>엣지 HW·기구</td><td>CY8CKIT+보행기 통합, <b>충전 스테이션·도킹 감지 제작</b>, raw 수집·자체데이터 총괄</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 07 리스크 -->
+  <section>
+    <div class="shead"><span class="snum">07</span><h2>리스크 &amp; 완화</h2></div>
+    <div class="risks">
+      <div class="risk"><div class="r">듀얼모드로 스코프 2배</div><div class="m">히어로=도킹전환 집중, 실외 보행은 재현으로 축소</div></div>
+      <div class="risk"><div class="r">낙상 양성 데이터 희소</div><div class="m">자체수집 + 공개데이터 사전학습 + focal loss</div></div>
+      <div class="risk"><div class="r">TI↔Infineon 도메인 갭</div><div class="m">블루프린트 복제 후 자체 데이터 파인튜닝</div></div>
+      <div class="risk"><div class="r">모드 전환 오작동</div><div class="m">충전전류 디바운스 + 워밍업/재획득 시퀀스</div></div>
+      <div class="risk"><div class="r">심박 라이브 불안정</div><div class="m">정지 한정 + "측정불가" 표기, 낙상을 히어로로</div></div>
+      <div class="risk"><div class="r">HW 리드타임(해외배송)</div><div class="m">발주 즉시 + 재고확인, 예비기 1대</div></div>
+    </div>
+  </section>
+
+  <!-- 08 Gazebo -->
+  <section>
+    <div class="shead"><span class="snum">08</span><h2>Gazebo 시뮬레이션</h2></div>
+    <p class="lead"><strong>난점</strong>: Gazebo엔 mmWave FMCW(micro-Doppler) 네이티브 센서가 없다. <strong>해법</strong>: Gazebo는 시나리오의 물리·지상진실만 제공하고, 커스텀 <strong>'sim 레이더' 플러그인</strong>이 실제 파이프라인과 동일 메시지를 합성 → 탐지 스택은 sim/real 무관.</p>
+    <div class="mswitch">
+<pre>원룸 SDF 월드 ── 벽·가구 + 충전 스테이션 + 행복이 로봇(URDF)
+             └─ <b>Human Actor(스켈레톤)</b>: 걷기·앉기·눕기·낙상(앞/뒤/옆)·장시간 무동작
+                    │ 링크 pose/velocity (ground truth)
+                    ▼
+           <b>[커스텀 sim-radar 플러그인]</b>
+              경로1(간단): 사람 위치·몸통속도·재실·미세움직임 → '사람 상태' 토픽
+              경로2(고급): 신체부위=점산란체 → 도플러 합성 → micro-Doppler → 실제 CNN
+              + 도메인 랜덤화(노이즈·클러터·체형)로 sim→real 갭 완화
+<span class="cm"># 히어로 데모 완전 시뮬: 도킹→전환→낙상→sim레이더→CNN→웹경보 (하드웨어 없이 end-to-end)
+# Windows면 WSL2(Ubuntu)에서 ROS 2 + Gazebo</span></pre>
+    </div>
+  </section>
+
+  <!-- 09 통신 -->
+  <section>
+    <div class="shead"><span class="snum">09</span><h2>Gazebo ↔ 웹앱 통신</h2></div>
+    <div class="flow" role="list" aria-label="통신 경로">
+      <div class="step" role="listitem"><div class="sn">GAZEBO</div>Gz Sim 토픽</div>
+      <div class="step" role="listitem"><div class="sn">BRIDGE</div>ros_gz_bridge → ROS 2</div>
+      <div class="step" role="listitem"><div class="sn">DETECT</div>낙상·생체·고독사·모드 노드</div>
+      <div class="step" role="listitem"><div class="sn">GATEWAY</div>FastAPI(rclpy)·이벤트 DB</div>
+      <div class="step" role="listitem"><div class="sn">WEB</div>WebSocket → 웹앱</div>
+    </div>
+    <p class="lead" style="margin-top:14px">표준 대안은 <strong>rosbridge_server + roslibjs</strong>(웹이 ROS 직접 구독). 우리는 이미 있는 <strong>FastAPI를 단일 게이트웨이</strong>로 써서 rclpy 구독→WebSocket 푸시(이벤트 저장·알림 릴레이 겸함). 옵션으로 Gazebo 카메라를 web_video_server(MJPEG)로 대시보드에 스트림.</p>
+  </section>
+
+  <!-- 10 노인 UI/UX -->
+  <section>
+    <div class="shead"><span class="snum">10</span><h2>노인 UI/UX — 직관적 메뉴·레이아웃</h2></div>
+    <p class="lead">두 사용자·두 화면: <strong>어르신 대면</strong>(보행기 터치스크린=웹 키오스크) / <strong>보호자</strong>(성인 자녀·폰·웹). 노인공학 원칙: 큰 터치타깃 ≥72px · 큰 글씨 ≥22px · <strong>고대비 AAA</strong> · <strong>따뜻한 색(파랑-검정 회피 — 수정체 황변)</strong> · 얕은 계층 1–2단 · 제스처 금지·탭만 · 아이콘+글자 병기 · 홈·SOS 고정 · 음성 우선.</p>
+    <div class="kiosks">
+      <div class="kiosk">
+        <div class="kbar"><span>오후 2:30 · 7월 25일 금</span></div>
+        <div class="kstatus">🟢 안심하세요 · 지켜보는 중</div>
+        <div class="ktiles">
+          <div class="ktile"><div class="ke">🚶</div>보행 도움</div>
+          <div class="ktile"><div class="ke">❤️</div>건강 상태</div>
+          <div class="ktile"><div class="ke">📞</div>가족 연결</div>
+          <div class="ktile sos"><div class="ke">🆘</div>도움 요청</div>
+        </div>
+        <div class="kcap">어르신 홈 — 큰 타일 4개 max</div>
+      </div>
+      <div class="kiosk">
+        <div class="kbar calm"><span>실내 모드 · 충전 중</span></div>
+        <div class="kbig">🟢</div>
+        <div class="kmsg">지켜보고 있어요</div>
+        <div class="kvit"><span>❤️ 72</span><span>🏠 재실 중</span></div>
+        <div class="ktile sos wide"><div class="ke">🆘</div>도움 요청</div>
+        <div class="kcap">충전(실내모드) — 정보 최소·방해 없음</div>
+      </div>
+    </div>
+    <p class="lead" style="margin-top:16px"><strong>보호자 대시보드</strong>(성인 대상, 밀도↑ 허용): 현재 모드 배지 · 실시간 상태 카드 · 이벤트 타임라인 · 활동/수면/심박 <strong>트렌드 차트</strong>(돌봄진단) · 알림 이력.</p>
+  </section>
+
+  <!-- 11 프론트엔드 -->
+  <section>
+    <div class="shead"><span class="snum">11</span><h2>프론트엔드 — React + Vite</h2></div>
+    <p class="lead">실제 구현 = Gazebo 더미데이터 → 웹 실시간 시각화. SEO·SSR 불필요 + roslibjs·Three.js·차트가 전부 JS 생태계 → <strong>React+Vite SPA가 Next.js보다 가볍고 깔끔, Flutter보다 생태계 적합</strong>. 라우팅 React Router <span class="mono" style="font-size:13px">/kiosk</span>·<span class="mono" style="font-size:13px">/dashboard</span>.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>영역</th><th>선택</th><th>이유</th></tr></thead>
+        <tbody>
+          <tr><td>프레임워크</td><td>Vite + React (SPA·PWA 키오스크)</td><td>SSR 오버헤드 0, JS 시각화 생태계 네이티브</td></tr>
+          <tr><td>전환 애니메이션</td><td>Framer Motion</td><td>모드전환·화면전환 부드럽게(웹 네이티브)</td></tr>
+          <tr><td>고빈도 렌더</td><td>Three.js / PixiJS (Canvas·WebGL)</td><td>포인트클라우드·스펙트로그램 <b>ref+명령형</b>(React state 금지)</td></tr>
+          <tr><td>상태·실시간</td><td>Zustand + WebSocket · Recharts</td><td>FastAPI 스트림 · 트렌드 차트 · 이력 TanStack Query</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead" style="margin-top:14px"><strong>성능 핵심</strong>: 부드러움·효율의 열쇠는 프레임워크가 아니라 <strong>렌더링 전략</strong> — 고빈도 스트림은 Canvas/WebGL 명령형, React는 저빈도 UI만. <strong>경계</strong>: Flutter=네이티브 모바일 메인 / Next.js=SEO·서버렌더 필요 시 (둘 다 해당 없음).</p>
+  </section>
+
+  <footer>
+    <div><b>행복이</b> — 듀얼모드 고령 케어 로봇 · 설계안 v3 · 2026-07-25 · 팀 오합지존</div>
+    <div class="links">
+      <a href="https://github.com/sareebali/mmwave-radar-fall-detection">GitHub 낙상 원본</a>
+      <a href="https://huggingface.co/datasets/strikersoft/microDopplerHAR">microDopplerHAR (MIT)</a>
+      <a href="https://huggingface.co/datasets/YShane11/mmwave-heart-rate-dataset">심박 데이터셋</a>
+      <a href="https://huggingface.co/datasets/rushai-dev/fmcw-vital-signs">fmcw-vital-signs (Apache)</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+  const tasks = [
+    ["요구·듀얼모드 상태정의",            [1,1,0,0,0,0,0,0], false],
+    ["실내 HW 브링업 + 충전 스테이션 제작", [1,1,1,0,0,0,0,0], false],
+    ["raw 수집 + 자체 낙상 데이터 수집",   [0,1,1,1,0,0,0,0], false],
+    ["공개데이터 사전학습(CNN)",          [0,1,1,0,0,0,0,0], false],
+    ["낙상 모델 + 높이규칙 폴백",          [0,0,1,1,1,0,0,0], false],
+    ["생명징후 추정",                     [0,0,1,1,1,0,0,0], false],
+    ["모드 전환 상태머신(도킹⇄실외)",      [0,0,0,1,1,1,0,0], true],
+    ["고독사 상태머신 + 진단(시뮬)",       [0,0,0,1,1,1,0,0], false],
+    ["서비스(대시보드·알림·백엔드)",       [0,0,1,1,1,1,0,0], false],
+    ["엣지 포팅 + 실외 보행 데모 재현",     [0,0,0,0,1,1,1,0], false],
+    ["통합(도킹→전환→감지)·리허설·발표",   [0,0,0,0,0,1,1,1], true],
+  ];
+  const gb = document.getElementById("gbody");
+  for (const [name, weeks, hero] of tasks){
+    const tr = document.createElement("tr");
+    const td0 = document.createElement("td"); td0.className="task"+(hero?" hi":""); td0.textContent=name; tr.appendChild(td0);
+    for (const on of weeks){
+      const td = document.createElement("td"); td.className="g";
+      const bar = document.createElement("div"); bar.className="bar"+(on?" on":"")+(on&&hero?" hero":"");
+      td.appendChild(bar); tr.appendChild(td);
+    }
+    gb.appendChild(tr);
+  }
+
+  (function(){
+    const c = document.getElementById("radar"); if(!c) return;
+    const ctx = c.getContext("2d");
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let W,H,DPR,cx,cy,R,t=0,raf;
+    const color=()=>getComputedStyle(document.documentElement).getPropertyValue('--signal').trim()||'#0C93A4';
+    function size(){
+      DPR=Math.min(devicePixelRatio||1,2); W=c.clientWidth; H=c.clientHeight;
+      c.width=W*DPR; c.height=H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
+      cx=W*0.82; cy=H*0.30; R=Math.max(W,H)*0.55;
+    }
+    function rings(){
+      ctx.clearRect(0,0,W,H); const col=color();
+      ctx.globalAlpha=0.22; ctx.strokeStyle=col; ctx.lineWidth=1;
+      for(let i=1;i<=6;i++){ctx.beginPath();ctx.arc(cx,cy,R*i/6,0,Math.PI*2);ctx.stroke();}
+      ctx.globalAlpha=0.12;
+      for(let a=0;a<12;a++){const ang=a*Math.PI/6;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(ang)*R,cy+Math.sin(ang)*R);ctx.stroke();}
+    }
+    function sweep(){
+      rings(); const col=color();
+      ctx.save(); ctx.translate(cx,cy); ctx.rotate(t);
+      const grad=ctx.createLinearGradient(0,0,R,0);
+      grad.addColorStop(0,col); grad.addColorStop(1,'transparent');
+      ctx.globalAlpha=0.16; ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,R,-0.32,0); ctx.closePath();
+      ctx.fillStyle=grad; ctx.fill(); ctx.restore();
+      t+=0.006; raf=requestAnimationFrame(sweep);
+    }
+    size(); addEventListener("resize",()=>{cancelAnimationFrame(raf);size();start();});
+    function start(){ if(reduce){rings();} else {raf=requestAnimationFrame(sweep);} }
+    start();
+  })();
+</script>

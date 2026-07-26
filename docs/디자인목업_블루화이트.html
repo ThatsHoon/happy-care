@@ -1,0 +1,269 @@
+<style>
+  :root{
+    --ground:#E9EFFA; --card:#FFFFFF; --screen:#F4F7FE;
+    --ink:#0F1B33; --muted:#5B6B87; --faint:#8A97B2; --line:#E4EAF5;
+    --blue:#2E6BF6; --blue-deep:#1B4DB3; --blue-soft:#EAF1FF;
+    --good:#1FA97A; --good-soft:#E3F5EE; --danger:#E5484D; --danger-soft:#FCE9E9;
+    --amber:#E8A23D;
+    --sans:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,-apple-system,sans-serif;
+    --shadow:0 26px 50px -22px rgba(24,54,120,.40);
+    --shadow-sm:0 8px 22px -12px rgba(24,54,120,.28);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:
+    radial-gradient(120% 80% at 80% -10%, #DCE7FA 0%, transparent 55%),
+    var(--ground);
+    color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.4}
+  .wrap{max-width:1080px;margin:0 auto;padding:40px 24px 72px}
+  .page-head{margin-bottom:30px}
+  .eyebrow{font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin:0 0 10px}
+  .page-head h1{margin:0;font-size:clamp(26px,4vw,38px);font-weight:800;letter-spacing:-.02em}
+  .page-head p{margin:10px 0 0;color:var(--muted);font-size:16px;max-width:60ch}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+  .chip{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;background:var(--card);
+    border:1px solid var(--line);border-radius:999px;padding:6px 12px;color:var(--muted)}
+  .sw{width:13px;height:13px;border-radius:4px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.05)}
+
+  .stage{display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start;justify-content:center}
+  .device-label{font-size:13px;font-weight:700;color:var(--muted);text-align:center;margin:0 0 14px;letter-spacing:.02em}
+  .device-label span{color:var(--blue)}
+
+  /* ---------- phone (caregiver) ---------- */
+  .phone{width:376px;background:var(--card);border-radius:42px;padding:13px;box-shadow:var(--shadow);border:1px solid var(--line)}
+  .phone .screen{background:var(--screen);border-radius:30px;padding:20px 18px 0;overflow:hidden}
+  .appbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .greet .hi{font-size:13px;color:var(--muted);font-weight:600}
+  .greet .who{font-size:20px;font-weight:800;letter-spacing:-.01em}
+  .iconbtn{width:42px;height:42px;border-radius:14px;background:var(--card);border:1px solid var(--line);
+    display:grid;place-items:center;color:var(--ink);position:relative}
+  .iconbtn .dot{position:absolute;top:9px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--danger);border:2px solid var(--card)}
+
+  .hero{background:var(--card);border-radius:26px;padding:24px 20px 20px;box-shadow:var(--shadow-sm);
+    display:flex;flex-direction:column;align-items:center;text-align:center}
+  .gauge{position:relative;width:196px;height:196px}
+  .gauge svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .gauge-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+  .gauge-check{width:52px;height:52px;border-radius:50%;background:var(--good-soft);color:var(--good);display:grid;place-items:center;margin-bottom:6px}
+  .gauge-big{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1}
+  .gauge-small{font-size:13px;color:var(--muted);font-weight:600}
+  .hero-sub{margin-top:16px;font-size:14px;color:var(--muted);font-weight:600;
+    background:var(--blue-soft);border-radius:999px;padding:9px 16px;color:var(--blue-deep)}
+
+  .metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  .mcard{background:var(--card);border-radius:20px;padding:15px 16px;box-shadow:var(--shadow-sm)}
+  .mcard .mtop{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;font-weight:700}
+  .mcard .mtop .mi{width:26px;height:26px;border-radius:8px;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center}
+  .mcard .mval{margin-top:12px;font-size:30px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:baseline;gap:5px}
+  .mcard .mval .u{font-size:14px;font-weight:600;color:var(--faint)}
+  .bars{display:flex;align-items:flex-end;gap:4px;height:30px;margin-top:12px}
+  .bars i{flex:1;background:var(--blue-soft);border-radius:3px}
+  .bars i.on{background:var(--blue)}
+
+  .map{background:var(--card);border-radius:20px;padding:15px 16px;box-shadow:var(--shadow-sm);margin-top:12px}
+  .map .mtop{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700;color:var(--muted)}
+  .map .badge{font-size:11.5px;font-weight:700;color:var(--blue);background:var(--blue-soft);border-radius:999px;padding:3px 10px}
+  .plan{margin-top:12px;width:100%;height:104px;display:block}
+
+  .feed{margin-top:16px;padding-bottom:8px}
+  .feed h3{font-size:14px;font-weight:800;margin:0 0 8px}
+  .feed .row{display:flex;align-items:center;gap:11px;padding:9px 2px}
+  .feed .t{font-size:12px;color:var(--faint);font-weight:700;width:44px;font-variant-numeric:tabular-nums}
+  .feed .d{width:9px;height:9px;border-radius:50%;background:var(--blue)}
+  .feed .d.g{background:var(--good)}
+  .feed .txt{font-size:13.5px;font-weight:600}
+
+  .tabbar{display:flex;justify-content:space-around;padding:12px 6px 16px;margin:12px -18px 0;
+    background:var(--card);border-top:1px solid var(--line)}
+  .tab{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--faint)}
+  .tab.on{color:var(--blue)}
+
+  /* ---------- tablet (kiosk) ---------- */
+  .tablet{width:520px;background:var(--card);border-radius:34px;padding:16px;box-shadow:var(--shadow);border:1px solid var(--line)}
+  .tablet .screen{background:var(--screen);border-radius:24px;padding:26px 26px 30px}
+  .ktop{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .kclock{font-size:18px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+  .kconn{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:700;color:var(--good);
+    background:var(--good-soft);border-radius:999px;padding:7px 14px}
+  .kstatus{display:flex;flex-direction:column;align-items:center;text-align:center;margin:6px 0 22px}
+  .kgauge{position:relative;width:220px;height:220px}
+  .kgauge svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .kgauge .kc{position:absolute;inset:0;display:grid;place-items:center;color:var(--blue)}
+  .ktitle{font-size:38px;font-weight:800;letter-spacing:-.02em;margin:18px 0 0}
+  .ksub{font-size:20px;font-weight:600;color:var(--muted);margin-top:6px}
+  .kgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .ktile{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;min-height:118px;
+    display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow-sm)}
+  .ktile .ki{width:56px;height:56px;border-radius:16px;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center}
+  .ktile .kl{font-size:23px;font-weight:800}
+  .ktile .kv{font-size:34px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:baseline;gap:6px}
+  .ktile .kv .u{font-size:17px;font-weight:600;color:var(--faint)}
+  .ktile.danger{background:var(--danger);border-color:var(--danger);color:#fff}
+  .ktile.danger .ki{background:rgba(255,255,255,.2);color:#fff}
+
+  .foot{margin-top:44px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px 22px;box-shadow:var(--shadow-sm)}
+  .foot h3{margin:0 0 12px;font-size:15px;font-weight:800}
+  .maptbl{width:100%;border-collapse:collapse;font-size:13.5px}
+  .maptbl td{padding:8px 10px;border-bottom:1px solid var(--line)}
+  .maptbl tr:last-child td{border-bottom:none}
+  .maptbl td:first-child{color:var(--muted);font-weight:700;white-space:nowrap}
+  .maptbl .ar{color:var(--blue);font-weight:800}
+
+  @media (max-width:520px){ .phone,.tablet{width:100%} }
+  svg.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m8.5 12 2.5 2.5 4.5-4.5"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 5.6a5.4 5.4 0 0 0-7.7 0L12 6.7l-1.1-1.1a5.4 5.4 0 1 0-7.7 7.7L12 22l8.8-8.7a5.4 5.4 0 0 0 0-7.7z"/></symbol>
+  <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M22 12h-4l-3 8L9 4l-3 8H2"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></symbol>
+  <symbol id="i-activity" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l3-4 3 3 4-6"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 21v-6M4 11V3M12 21v-8M12 9V3M20 21v-4M20 13V3M1 15h6M9 9h6M17 17h6"/></symbol>
+  <symbol id="i-person" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2"/><path d="M12 6v7"/><path d="M12 13l-3 8M12 13l3 8"/><path d="M12 8l-3.5-1.5M12 8l3.5-1.5"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0"/><path d="M8.5 16a5 5 0 0 1 7 0"/><path d="M12 20h.01"/></symbol>
+</defs></svg>
+
+<div class="wrap">
+  <div class="page-head">
+    <p class="eyebrow">행복이 · 디자인 방향 목업</p>
+    <h1>블루 &amp; 화이트 — EV앱 고퀄 패턴을 케어로</h1>
+    <p>Nickelfox의 Electric Car App 레퍼런스(원형 게이지·데이터 카드·지도·굵은 숫자)를 블루/화이트로 리컬러해 흡수했습니다. 보호자 앱은 풀 스타일, 어르신 키오스크는 핵심만 크고 단순하게.</p>
+    <div class="chips">
+      <span class="chip"><span class="sw" style="background:#2E6BF6"></span>Primary #2E6BF6</span>
+      <span class="chip"><span class="sw" style="background:#1B4DB3"></span>Deep #1B4DB3</span>
+      <span class="chip"><span class="sw" style="background:#0F1B33"></span>Ink #0F1B33</span>
+      <span class="chip"><span class="sw" style="background:#1FA97A"></span>안심 #1FA97A</span>
+      <span class="chip"><span class="sw" style="background:#E5484D"></span>낙상 #E5484D</span>
+    </div>
+  </div>
+
+  <div class="stage">
+    <!-- ============ CAREGIVER PHONE ============ -->
+    <div>
+      <p class="device-label">보호자 앱 · <span>모바일</span></p>
+      <div class="phone"><div class="screen">
+        <div class="appbar">
+          <div class="greet"><div class="hi">안녕하세요</div><div class="who">어머니 상태예요</div></div>
+          <button class="iconbtn"><svg class="ic"><use href="#i-bell"/></svg><span class="dot"></span></button>
+        </div>
+
+        <div class="hero">
+          <div class="gauge">
+            <svg viewBox="0 0 200 200">
+              <defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#1E5BE6"/><stop offset="1" stop-color="#5B9BFF"/></linearGradient></defs>
+              <circle cx="100" cy="100" r="84" fill="none" stroke="#EAF1FF" stroke-width="16"/>
+              <circle cx="100" cy="100" r="84" fill="none" stroke="url(#hg)" stroke-width="16"
+                stroke-linecap="round" stroke-dasharray="528" stroke-dashoffset="74"/>
+            </svg>
+            <div class="gauge-center">
+              <div class="gauge-check"><svg class="ic" style="width:28px;height:28px;stroke-width:2.4"><use href="#i-check"/></svg></div>
+              <div class="gauge-big">안심</div>
+              <div class="gauge-small">오늘도 평온해요</div>
+            </div>
+          </div>
+          <div class="hero-sub">재실 중 · 12분 전 활동 · 이상 없음</div>
+        </div>
+
+        <div class="metrics">
+          <div class="mcard">
+            <div class="mtop"><span class="mi"><svg class="ic" style="width:16px;height:16px"><use href="#i-pulse"/></svg></span>심박</div>
+            <div class="mval">72<span class="u">회/분</span></div>
+          </div>
+          <div class="mcard">
+            <div class="mtop"><span class="mi"><svg class="ic" style="width:16px;height:16px"><use href="#i-activity"/></svg></span>활동량</div>
+            <div class="bars"><i style="height:40%"></i><i class="on" style="height:65%"></i><i class="on" style="height:50%"></i><i style="height:75%"></i><i class="on" style="height:60%"></i><i style="height:45%"></i></div>
+          </div>
+        </div>
+
+        <div class="map">
+          <div class="mtop"><span>집 · 실시간 위치</span><span class="badge">실내 모드</span></div>
+          <svg class="plan" viewBox="0 0 240 104">
+            <rect x="2" y="2" width="120" height="58" rx="10" fill="#EAF1FF" stroke="#2E6BF6" stroke-width="1.5"/>
+            <rect x="128" y="2" width="110" height="58" rx="10" fill="#fff" stroke="#E4EAF5" stroke-width="1.5"/>
+            <rect x="2" y="66" width="78" height="36" rx="10" fill="#fff" stroke="#E4EAF5" stroke-width="1.5"/>
+            <rect x="86" y="66" width="152" height="36" rx="10" fill="#fff" stroke="#E4EAF5" stroke-width="1.5"/>
+            <text x="14" y="32" font-family="var(--sans)" font-size="12" font-weight="700" fill="#1B4DB3">거실</text>
+            <text x="140" y="34" font-family="var(--sans)" font-size="12" font-weight="700" fill="#8A97B2">침실</text>
+            <text x="14" y="88" font-family="var(--sans)" font-size="11" font-weight="700" fill="#8A97B2">주방</text>
+            <text x="98" y="88" font-family="var(--sans)" font-size="11" font-weight="700" fill="#8A97B2">화장실</text>
+            <circle cx="70" cy="40" r="8" fill="#2E6BF6"/><circle cx="70" cy="40" r="8" fill="#2E6BF6" opacity=".25" transform="scale(1)"/>
+          </svg>
+        </div>
+
+        <div class="feed">
+          <h3>최근 소식</h3>
+          <div class="row"><span class="t">14:20</span><span class="d"></span><span class="txt">도킹 · 실내 감시 시작</span></div>
+          <div class="row"><span class="t">09:40</span><span class="d g"></span><span class="txt">아침 산책 · 실외 보행 32분</span></div>
+          <div class="row"><span class="t">07:10</span><span class="d"></span><span class="txt">기상 감지 · 심박 정상</span></div>
+        </div>
+
+        <div class="tabbar">
+          <div class="tab on"><svg class="ic"><use href="#i-home"/></svg>홈</div>
+          <div class="tab"><svg class="ic"><use href="#i-activity"/></svg>활동</div>
+          <div class="tab"><svg class="ic"><use href="#i-bell"/></svg>알림</div>
+          <div class="tab"><svg class="ic"><use href="#i-settings"/></svg>설정</div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ KIOSK TABLET ============ -->
+    <div>
+      <p class="device-label">어르신 키오스크 · <span>보행기 화면</span></p>
+      <div class="tablet"><div class="screen">
+        <div class="ktop">
+          <span class="kclock">오후 2:30 · 7월 25일 금</span>
+          <span class="kconn"><svg class="ic" style="width:18px;height:18px"><use href="#i-wifi"/></svg>연결됨</span>
+        </div>
+
+        <div class="kstatus">
+          <div class="kgauge">
+            <svg viewBox="0 0 200 200">
+              <circle cx="100" cy="100" r="86" fill="none" stroke="#EAF1FF" stroke-width="14"/>
+              <circle cx="100" cy="100" r="86" fill="none" stroke="url(#hg)" stroke-width="14"
+                stroke-linecap="round" stroke-dasharray="540" stroke-dashoffset="70"/>
+            </svg>
+            <div class="kc"><svg class="ic" style="width:64px;height:64px;stroke-width:1.9"><use href="#i-shield"/></svg></div>
+          </div>
+          <h2 class="ktitle">지켜보고 있어요</h2>
+          <p class="ksub">실내 모드 · 카메라 꺼짐</p>
+        </div>
+
+        <div class="kgrid">
+          <div class="ktile">
+            <span class="ki"><svg class="ic" style="width:30px;height:30px"><use href="#i-pulse"/></svg></span>
+            <span class="kl">건강 상태</span>
+            <span class="kv">72<span class="u">회/분</span></span>
+          </div>
+          <div class="ktile">
+            <span class="ki"><svg class="ic" style="width:30px;height:30px"><use href="#i-person"/></svg></span>
+            <span class="kl">보행 도움</span>
+          </div>
+          <div class="ktile">
+            <span class="ki"><svg class="ic" style="width:30px;height:30px"><use href="#i-phone"/></svg></span>
+            <span class="kl">가족 연결</span>
+          </div>
+          <div class="ktile danger">
+            <span class="ki"><svg class="ic" style="width:30px;height:30px"><use href="#i-alert"/></svg></span>
+            <span class="kl">도움 요청</span>
+          </div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <h3>EV 레퍼런스 → 케어 매핑</h3>
+    <table class="maptbl">
+      <tr><td>원형 충전 게이지</td><td><span class="ar">→</span> 종합 안심 상태 링 (보호자 홈 히어로)</td></tr>
+      <tr><td>배터리·타이어 카드</td><td><span class="ar">→</span> 심박·활동량 미니 카드</td></tr>
+      <tr><td>충전소 지도</td><td><span class="ar">→</span> 집 평면도 · 실시간 방/모드</td></tr>
+      <tr><td>하단 탭 내비게이션</td><td><span class="ar">→</span> 홈 · 활동 · 알림 · 설정</td></tr>
+      <tr><td>다크 + 네온 그린</td><td><span class="ar">→</span> 블루 &amp; 화이트 (텍스트는 딥 네이비로 노인 가독성 확보)</td></tr>
+    </table>
+  </div>
+</div>
