@@ -26,6 +26,7 @@ web/       React + Vite + TypeScript
   src/components/              RadialGauge · IconChip · StatCard · Sparkbars 등 공유 프리미티브
   src/views/Kiosk.tsx          어르신 키오스크
   src/views/dashboard/         보호자 대시보드(HeroStatus·MetricCards·HomeMap·ActivityFeed·TabBar)
+sim/       Gazebo Classic 11 시뮬레이션(원룸 월드·로봇·WorldPlugin) — worlds/urdf/src/launch
 ```
 
 공유 계약(`backend/happy_care/contracts.py` ↔ `web/src/types.ts`)이 단일 진실원 —

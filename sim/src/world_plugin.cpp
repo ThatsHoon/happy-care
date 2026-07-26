@@ -110,6 +110,8 @@ private:
     auto now = world_->SimTime();
     double dt = (now - last_update_time_).Double();
     if (dt <= 0) {
+      last_update_time_ = now;
+      transition_start_time_ = now;
       return;
     }
 
